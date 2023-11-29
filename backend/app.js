@@ -11,8 +11,8 @@ const userRoutes = require('./routes/user')
 
 const path = require('path')
 // variable d'environnement
-const dotenv = require('dotenv')//.config()
-const result = dotenv.config()
+const dotenv = require('dotenv').config()
+// const result = dotenv.config()
 
 // Crée une application express
 const app = express()
@@ -22,10 +22,10 @@ app.use(mongooseExpressErrorHandler)
 // Connection à la base de donnée mangoose
 mongoose
   .connect(
-    'mongodb+srv://bal650:test@test.to4g94m.mongodb.net/?retryWrites=true&w=majority',
-    {useNewUrlParser: true, useUnifiedTopology: true}
-    // `mongodb+srv:///${process.env.DB_USER}:${process.env.DB_PASSWORD}@${process.env.DB_CLUSTER}.mongodb.net/?retryWrites=true&w=majority`,
+    // 'mongodb+srv://bal650:test@test.to4g94m.mongodb.net/?retryWrites=true&w=majority',
     // {useNewUrlParser: true, useUnifiedTopology: true}
+    `mongodb+srv://${process.env.DB_USER}:${process.env.DB_PASSWORD}@${process.env.DB_CLUSTER}.mongodb.net/?retryWrites=true&w=majority`,
+    {useNewUrlParser: true, useUnifiedTopology: true}
   )
   .then(() => console.log('Connexion à MongoDB réussie!'))
   .catch(() => console.log('Connexion à MongoDB échouée!'))

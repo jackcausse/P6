@@ -9,8 +9,8 @@ const userSchema = mongoose.Schema({
 const express = require('express')
 const app = express()
 app.use(mongooseExpressErrorHandler)
-
+// Pour ne pas enregister 2 fois la même adresse email dans la basede donnée
 userSchema.plugin(uniqueValidator)
-// userSchema.plugin(mongooseExpressErrorHandler)
 
+// Exportation du module
 module.exports = mongoose.model('User', userSchema)
