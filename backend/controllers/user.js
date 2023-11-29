@@ -2,18 +2,21 @@ const bcrypt = require('bcrypt')
 const jwt = require('jsonwebtoken')
 const User = require('../models/User')
 
+//Signup pour enregistrer le nouvel utilisateur dans la BDD
 exports.signup = (req, res, next) => {
+  // Hacher le mot de passe avant de l'envoyer dans la base de données
   bcrypt
-    .hash(req.body.password, 10)
+    .hash(req.body.password, 10) //Nombre de fois que sera executé l'algoritme de hachage
     .then((hash) => {
+      // Enregistré dans mongodb
       const user = new User({
         email: req.body.email,
         password: hash,
       })
       user
         .save()
-        .then(() => res.status(201).json({ message: 'Utilisateur créé !'}))
-        
+        .then(() => res.status(201).json({message: 'Utilisateur créé !'}))
+
         .catch((error) => res.status(400).json({error}))
     })
     .catch((error) => res.status(500).json({error}))

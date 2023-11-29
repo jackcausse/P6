@@ -6,6 +6,7 @@ exports.createSauces = (req, res, next) => {
   const saucesObject = JSON.parse(req.body.sauce)
   delete saucesObject._id
   // delete saucesObject._userId//
+  
   // On crée une nouvelle sauce
   const sauces = new Sauces({
     // L'opérateur spread ... est utilisé pour faire une copie de tous les éléments de req.body

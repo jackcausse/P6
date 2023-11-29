@@ -1,4 +1,6 @@
 const mongoose = require('mongoose')
+const mongooseExpressErrorHandler = require('mongoose-express-error-handler')
+
 
 const sauceSchema = mongoose.Schema({
   userId: {type: String, required: true},
@@ -13,5 +15,6 @@ const sauceSchema = mongoose.Schema({
   usersLiked: {type: [], required: true},
   usersDisliked: {type: [], required: true},
 })
+
 
 module.exports = mongoose.model('Sauce', sauceSchema)
