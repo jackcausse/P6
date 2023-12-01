@@ -1,3 +1,4 @@
+// le sytème de fichier permet de modifier le système de fichiers
 const fs = require('fs')
 const Sauces = require('../models/Sauces')
 
@@ -47,7 +48,7 @@ exports.getOneSauces = (req, res, next) => {
     })
 }
 
-// On modifie les sauces
+// On modifie une sauces
 exports.modifySauces = (req, res, next) => {
   const saucesObject = req.file
     ? {
@@ -89,7 +90,7 @@ exports.deleteSauces = (req, res, next) => {
         fs.unlink(`images/${filename}`, () => {
           Sauces.deleteOne({_id: req.params.id})
             .then(() => {
-              res.status(200).json({message: 'Objet supprimé !'})
+              res.status(200).json({message: 'Sauce supprimé !'})
             })
             .catch((error) => res.status(401).json({message: error}))
         })
@@ -127,7 +128,6 @@ exports.likeSauces = (req, res, next) => {
   Sauces.findOne({_id: req.params.id})
     .then((sauces) => {
     
-
       // Si le user id est false et si like === 1
       if (
         !sauces.usersLiked.includes(req.body.userId) &&
@@ -220,7 +220,7 @@ exports.likeSauces = (req, res, next) => {
               _id: req.params.id
             },
             {
-              // On retire like
+              // On retire dislike
               $inc: {dislikes: -1},
               // On retire le userId dans le tableau de userLiked
               $pull: {usersDisliked: req.body.userId},
