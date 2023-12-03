@@ -7,6 +7,7 @@ const User = require('../models/User')
 
 // Signup pour enregistrer un nouvel utilisateur dans la base de données
 exports.signup = (req, res, next) => {
+  // Hacher le mot de passe avant de l'envoyer dans la base de données
   bcrypt
     // 10 = nombre de fois exécuté par l'algorythme de hashage pour crypter le mot de passe
     .hash(req.body.password, 10)

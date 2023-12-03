@@ -8,10 +8,13 @@ const mongooseExpressErrorHandler = require('mongoose-express-error-handler')
 // Déclaration des routes et contrôleurs
 const saucesRoutes = require('./routes/sauces')
 const userRoutes = require('./routes/user')
-const path = require('path')
+
 
 // variable d'environnement
 const dotenv = require('dotenv').config()
+const path = require('path')
+
+
 
 // Crée une application express
 const app = express()
@@ -40,7 +43,6 @@ app.use((req, res, next) => {
   )
   next()
 })
-
 // Différentes route utilisées
 app.use('/images', express.static(path.join(__dirname, 'images')))
 app.use('/api/sauces', saucesRoutes)

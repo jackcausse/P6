@@ -8,9 +8,14 @@ const Sauces = require('../models/Sauces')
 exports.createSauces = (req, res, next) => {
   const saucesObject = JSON.parse(req.body.sauce)
   delete saucesObject._id
+
   
   // console.log(req.body.sauce)
   // On crée une nouvelle sauce les likes, dislikes et l'image
+
+  // delete saucesObject._userId//
+  
+  // On crée une nouvelle sauce
   const sauces = new Sauces({
     // L'opérateur spread ... est utilisé pour faire une copie de tous les éléments de req.body
     ...saucesObject,

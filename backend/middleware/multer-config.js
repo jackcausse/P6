@@ -1,5 +1,5 @@
 // Importation de fs
-// const fs = require('fs')
+const fs = require('fs')
 // Importation de multer
 const multer = require('multer')
 
@@ -10,12 +10,12 @@ const MIME_TYPES = {
   'image/png': 'png',
 }
 
-// try {
-//   const ok = fs.opendirSync('images')
-//   // console.log(ok)
-// } catch (e) {
-//   fs.mkdirSync('images')
-// }
+try {
+  const ok = fs.opendirSync('images')
+  // console.log(ok)
+} catch (e) {
+  fs.mkdirSync('images')
+}
 
 // Gère le fichier image
 const storage = multer.diskStorage({

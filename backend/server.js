@@ -18,7 +18,7 @@ const normalizePort = (val) => {
 
 // Défini le port d'écoute, en premier celui défini dans les variables d'environnement, sinon 3000
 const port = normalizePort(process.env.PORT || '3000')
-app.set('port', port)
+app.set('port', process.env.port)
 
 // Constante qui récupère la valeur d'erreur
 const errorHandler = (error) => {

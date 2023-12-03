@@ -1,5 +1,7 @@
 // Importation de mongoose
 const mongoose = require('mongoose')
+const mongooseExpressErrorHandler = require('mongoose-express-error-handler')
+
 
 // Champs du formulaire de création de la sauce
 const sauceSchema = mongoose.Schema({
