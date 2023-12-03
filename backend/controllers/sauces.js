@@ -1,17 +1,21 @@
-// le sytème de fichier permet de modifier le système de fichiers
+// Importation du module fs de node.js pour accéder aux fichiers du serveur
 const fs = require('fs')
+
+// Importation du models de la base de donnée MongoDB
 const Sauces = require('../models/Sauces')
 
-// On crée une sauce
+// On crée une sauce avec l'id de l'utilisateur
 exports.createSauces = (req, res, next) => {
   const saucesObject = JSON.parse(req.body.sauce)
   delete saucesObject._id
-  // delete saucesObject._userId//
-  // On crée une nouvelle sauce
+  
+  // console.log(req.body.sauce)
+  // On crée une nouvelle sauce les likes, dislikes et l'image
   const sauces = new Sauces({
     // L'opérateur spread ... est utilisé pour faire une copie de tous les éléments de req.body
     ...saucesObject,
-    // userId: req.auth.userId,//
+    
+    // Crée l'url image avec le protocole et l'hôte de la requête et le nom du fichier
     imageUrl: `${req.protocol}://${req.get('host')}/images/${
       req.file.filename
     }`,
@@ -21,7 +25,7 @@ exports.createSauces = (req, res, next) => {
     usersDisliked: [],
   })
 
-  // On sauvegarde la sauce
+  // Sauvegarde la sauce dans la base de donnée
   sauces
     .save()
     .then(() => {
@@ -33,11 +37,12 @@ exports.createSauces = (req, res, next) => {
     })
 }
 
-// On obtiens toute les sauces
+// On obtiens une sauce avec un utilisateur authentifié
 exports.getOneSauces = (req, res, next) => {
   Sauces.findOne({
     _id: req.params.id,
   })
+    // Sauce touvé
     .then((sauces) => {
       res.status(200).json(sauces)
     })
@@ -48,39 +53,49 @@ exports.getOneSauces = (req, res, next) => {
     })
 }
 
-// On modifie une sauces
+// On modifie une sauce avec l'identifiant de l'utilisateur qui la créée
 exports.modifySauces = (req, res, next) => {
-  const saucesObject = req.file
-    ? {
-        ...JSON.parse(req.body.sauce),
-        imageUrl: `${req.protocol}://${req.get('host')}/images/${
-          req.file.filename
-        }`,
-      }
-    : {...req.body}
-
-  // On supprime une sauces
-  delete saucesObject._userId
+  // Trouve la sauce avec son identifiant
   Sauces.findOne({_id: req.params.id})
-    .then((sauces) => {
-      if (sauces.userId != req.auth.userId) {
-        res.status(401).json({message: 'Non autorisé!'})
-      } else {
+    .then((sauce) => {
+      // Si l'utilisateur n'a pas créé la sauce
+      if (req.auth.userId !== sauce.userId) {
+        return res.status(403).json({message: 'Non autorisé !'})
+      }
+
+      // l'image est modifié l'image url
+      const filename = sauce.imageUrl.split('/images/')[1]
+     
+      // Supprime le fichier
+      fs.unlink(`images/${filename}`, () => {
+        // Crée un nouvel objet sauce avec les données mise à jour plus la nouvelle image si un fichier image est remplacé
+        const sauceObject = req.file
+          ? {
+              //  Récupère l'objet json
+              ...JSON.parse(req.body.sauce),
+              // Ajoute l'image url
+
+              imageUrl: `${req.protocol}://${req.get('host')}/images/${
+                req.file.filename
+              }`,
+            }
+          : {...req.body}
+        // Sauvegarde la sauce dans la base de donnée
         Sauces.updateOne(
           {_id: req.params.id},
-          {...saucesObject, _id: req.params.id}
+          {...sauceObject, _id: req.params.id}
         )
-          .then(() => res.status(200).json({message: 'Objet modifié!'}))
-          .catch((error) => res.status(401).json({message: error}))
-      }
+          .then(() => res.status(200).json({message: 'Sauce modifiée!'}))
+          .catch((error) => res.status(401).json({message: 'Non autorisé'}))
+      })
     })
-    .catch((error) => {
-      res.status(400).json({message: error})
-    })
+
+    .catch((error) => res.status(500).json({message: error.message}))
 }
 
 // On supprime une sauce
 exports.deleteSauces = (req, res, next) => {
+  console.log(req.body)
   Sauces.findOne({_id: req.params.id})
     .then((sauces) => {
       if (sauces.userId != req.auth.userId) {
@@ -115,39 +130,39 @@ exports.getAllSauces = (req, res, next) => {
     })
 }
 
-// Utilistion de la méthode js include()
+// Utilisation de la méthode js include()
+// La includes() méthode des Arrayinstances détermine si un tableau inclut une certaine valeur parmi ses entrées, en retournant true ou false selon le cas.
 // Utilisation de l'opérateur $inc (mongoDB)
+// Cet opérateur renvoie les documents qui correspondent aux valeurs spécifiées
 // utilisation de l'opérateur $push(mongoDB)
+// L’opérateur ajoute une valeur spécifiée à un tableau.
 // Utilisation de l'opérateur $pull (mongoDB)
+// L'opérateur supprime d'un tableau existant toutes les instances d'une ou plusieurs valeurs qui correspondent à une condition spécifiée.
 
-// On like, dislike retire le like
+// like, dislike des sauces
 exports.likeSauces = (req, res, next) => {
   console.log('dans le controller de la route likeSauce')
 
   // On trouve une sauce
   Sauces.findOne({_id: req.params.id})
     .then((sauces) => {
-    
       // Si le user id est false et si like === 1
-      if (
-        !sauces.usersLiked.includes(req.body.userId) &&
-        req.body.like === 1
-      ) {
+      if (!sauces.usersLiked.includes(req.body.userId) && req.body.like === 1) {
         console.log('sauces + 1')
 
         // Mise à jour BDD
-        Sauces
-          .updateOne(
-            {
-              _id: req.params.id,
-            },
-            {
-              // On incrémente like à 1
-              $inc: {likes: 1},
-              // On ajoute le userId dans le tableau de userLiked
-              $push: {usersLiked: req.body.userId},
-            }
-          )
+        Sauces.updateOne(
+          {
+            // Enregistre l'id de l'utilisateur
+            _id: req.params.id,
+          },
+          {
+            // Incrémente like à 1
+            $inc: {likes: 1},
+            // Ajoute le userId dans le tableau de userLiked
+            $push: {usersLiked: req.body.userId},
+          }
+        )
 
           .then(() => res.status(200).json({message: 'sauces like + 1'}))
           .catch((error) =>
@@ -162,18 +177,18 @@ exports.likeSauces = (req, res, next) => {
         console.log('userId est dans usersLiked et like = 0')
 
         // mise à jour dans la BDD
-        Sauces
-          .updateOne(
-            {
-              _id: req.params.id,
-            },
-            {
-              // On retire like
-              $inc: {likes: -1},
-              // On retire le userId dans le tableau de userLiked
-              $pull: {usersLiked: req.body.userId},
-            }
-          )
+        Sauces.updateOne(
+          {
+            // Enregistre l'id de l'utilisateur
+            _id: req.params.id,
+          },
+          {
+            // Retire like
+            $inc: {likes: -1},
+            // Supprime le userId dans le tableau de userLiked
+            $pull: {usersLiked: req.body.userId},
+          }
+        )
           .then(() => res.status(200).json({message: 'SaucesLike 0'}))
           .catch((error) =>
             res.status(400).json({
@@ -190,18 +205,18 @@ exports.likeSauces = (req, res, next) => {
         console.log('userId est dans usersDisliked et dislikes = 1')
 
         // mise à jour dans la BDD
-        Sauces
-          .updateOne(
-            {
-              _id: req.params.id
-            },
-            {
-              // On dislike
-              $inc: {dislikes: 1},
-              // On retire le userId dans le tableau de userdisliked
-              $push: {usersDisliked: req.body.userId},
-            }
-          )
+        Sauces.updateOne(
+          {
+            // Enregistre l'id de l'utilisateur
+            _id: req.params.id,
+          },
+          {
+            // Ajoute dislike
+            $inc: {dislikes: 1},
+            // Supprime le userId dans le tableau de userdisliked
+            $push: {usersDisliked: req.body.userId},
+          }
+        )
           .then(() => res.status(200).json({message: 'SaucesDislike +1'}))
           .catch((error) => res.status(400).json({message: error}))
       }
@@ -213,25 +228,25 @@ exports.likeSauces = (req, res, next) => {
       ) {
         console.log('userId est dans usersDisliked et like = 0')
 
-        // mise à jour dans la BDD
-        Sauces
-          .updateOne(
-            {
-              _id: req.params.id
-            },
-            {
-              // On retire dislike
-              $inc: {dislikes: -1},
-              // On retire le userId dans le tableau de userLiked
-              $pull: {usersDisliked: req.body.userId},
-            }
-          )
+        // Mise à jour dans la BDD
+        Sauces.updateOne(
+          {
+            // Enregistre l'id de l'utilisateur
+            _id: req.params.id,
+          },
+          {
+            // Retire dislike
+            $inc: {dislikes: -1},
+            // Supprime le userId dans le tableau de userLiked
+            $pull: {usersDisliked: req.body.userId},
+          }
+        )
           .then(() => res.status(200).json({message: 'usersDisliked  0'}))
-          .catch((error) => res.status(400).json({ message: error, }))
+          .catch((error) => res.status(400).json({message: error}))
       }
     })
 
-    .catch((error) => 
+    .catch((error) =>
       res.status(401).json({
         message: error,
       })

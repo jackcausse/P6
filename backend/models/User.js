@@ -1,3 +1,4 @@
+// Importation de mongoose...
 const mongoose = require('mongoose')
 const uniqueValidator = require('mongoose-unique-validator')
 const mongooseExpressErrorHandler = require('mongoose-express-error-handler')
@@ -10,8 +11,8 @@ const userSchema = mongoose.Schema({
 
 const express = require('express')
 const app = express()
-  // Pour ne pas enregister 2 fois la même adresse email dans la base de donnée
-  userSchema.plugin(uniqueValidator)
+// Pour ne pas enregister 2 fois la même adresse email dans la base de donnée
+userSchema.plugin(uniqueValidator)
 
 // Etend la gestion des contrôle d'erreurs
 app.use(mongooseExpressErrorHandler)

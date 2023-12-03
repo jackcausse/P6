@@ -1,3 +1,4 @@
+// Importation de mongoose
 const mongoose = require('mongoose')
 
 // Champs du formulaire de création de la sauce
@@ -15,4 +16,5 @@ const sauceSchema = mongoose.Schema({
   usersDisliked: {type: [], required: true},
 })
 
+// Exportation du module
 module.exports = mongoose.model('Sauce', sauceSchema)

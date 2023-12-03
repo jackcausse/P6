@@ -27,7 +27,7 @@ mongoose
   .then(() => console.log('Connexion à MongoDB réussie!'))
   .catch(() => console.log('Connexion à MongoDB échouée!'))
 
-  // Gère les problèmes de CORS
+// Middleware gère les problèmes de CORS
 app.use((req, res, next) => {
   res.setHeader('Access-Control-Allow-Origin', '*')
   res.setHeader(
@@ -45,4 +45,6 @@ app.use((req, res, next) => {
 app.use('/images', express.static(path.join(__dirname, 'images')))
 app.use('/api/sauces', saucesRoutes)
 app.use('/api/auth', userRoutes)
+
+// Exporte le module app
 module.exports = app
