@@ -5,7 +5,7 @@ const jwt = require('jsonwebtoken')
 module.exports = (req, res, next) => {
   try {
     // Récupère le token dans le header autorisation: 1er élément bearer, récupère le 2eme élément token
-    const token = req.headers.authorization.split(' ')[1]
+    const token = req.headers.authorization.split(SECRET_KEY)[1]
 
     // Vérifie que le token récupèré soit le même que le token généré
     const decodedToken = jwt.verify(token, 'process.env.sel')

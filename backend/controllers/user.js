@@ -55,7 +55,8 @@ exports.login = (req, res, next) => {
             userId: user._id,
             // jsonwebtoken donne un token à l'utilisateur afin d'utiliser l'app
             // 'process.env.sel'
-            token: jwt.sign({userId: user._id}, `${process.env.SECRET_KEY}`, {
+            token: jwt.sign({ userId: user._id }, `${process.env.SECRET_KEY}`, {
+              // token: jwt.sign({ userId: user._id }, process.env.SECRET_KEY, {
             // token: jwt.sign({userId: user._id}, 'process.env.sel', {
               expiresIn: '24h',
             }),
