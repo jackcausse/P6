@@ -4,6 +4,8 @@ const bcrypt = require('bcrypt')
 const jwt = require('jsonwebtoken')
 // Importation User de la base de donnée
 const User = require('../models/User')
+// variable d'environnement
+const dotenv = require('dotenv').config()
 
 // Signup pour enregistrer un nouvel utilisateur dans la base de données
 exports.signup = (req, res, next) => {
@@ -52,7 +54,8 @@ exports.login = (req, res, next) => {
           res.status(200).json({
             userId: user._id,
             // jsonwebtoken donne un token à l'utilisateur afin d'utiliser l'app
-            token: jwt.sign({userId: user._id}, 'process.env.sel', {
+            // 'process.env.sel'  
+            token: jwt.sign({userId: user._id}, `${process.env.SECRET_KEY}`, {
               expiresIn: '24h',
             }),
           })

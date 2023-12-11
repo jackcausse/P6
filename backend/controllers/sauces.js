@@ -65,7 +65,7 @@ exports.modifySauces = (req, res, next) => {
     .then((sauce) => {
       // Si l'utilisateur n'a pas créé la sauce
       if (req.auth.userId !== sauce.userId) {
-        return res.status(403).json({message: 'Non autorisé !'})
+        return res.status(401).json({message: 'Non autorisé!'})
       }
 
       // l'image est modifié l'image url
@@ -91,7 +91,7 @@ exports.modifySauces = (req, res, next) => {
           {...sauceObject, _id: req.params.id}
         )
           .then(() => res.status(200).json({message: 'Sauce modifiée!'}))
-          .catch((error) => res.status(401).json({message: 'Non autorisé'}))
+          .catch((error) => res.status(401).json({message: 'Non autorisé!'}))
       })
     })
 
