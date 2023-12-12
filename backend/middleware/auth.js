@@ -1,16 +1,14 @@
 
 // Import de jsonwebtoken
 const jwt = require('jsonwebtoken')
-const dotenv = require('dotenv').config()
 
 module.exports = (req, res, next) => {
   try {
     // Récupère le token dans le header autorisation: 1er élément bearer, récupère le 2eme élément token
-    const token = req.headers.authorization.split(process.env.SECRET_KEY)[1]
+    const token = req.headers.authorization.split(' ')[1]
 
     // Vérifie que le token récupèré soit le même que le token généré
-    // const decodedToken = jwt.verify(token, 'process.env.sel')
-    const decodedToken = jwt.verify(token, process.env.SECRET_KEY)
+    const decodedToken = jwt.verify(token, 'SECRET_KEY')
  
     // Récupère l'userId qu'il y a à l'intérieur du token déchiffré et le comparer avec l'user Id non chiffré
     const userId = decodedToken.userId
