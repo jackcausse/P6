@@ -8,7 +8,7 @@ module.exports = (req, res, next) => {
     const token = req.headers.authorization.split(' ')[1]
 
     // Vérifie que le token récupèré soit le même que le token généré
-    const decodedToken = jwt.verify(token, 'SECRET_KEY')
+    const decodedToken = jwt.verify(token, process.env.SECRET_KEY)
  
     // Récupère l'userId qu'il y a à l'intérieur du token déchiffré et le comparer avec l'user Id non chiffré
     const userId = decodedToken.userId

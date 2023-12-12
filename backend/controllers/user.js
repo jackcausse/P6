@@ -53,7 +53,7 @@ exports.login = (req, res, next) => {
           res.status(200).json({
             userId: user._id,
             // jsonwebtoken donne un token à l'utilisateur afin d'utiliser l'app
-            token: jwt.sign({ userId: user._id }, 'SECRET_KEY', {
+            token: jwt.sign({ userId: user._id }, process.env.SECRET_KEY, {
               expiresIn: '24h',
             }),
           })
